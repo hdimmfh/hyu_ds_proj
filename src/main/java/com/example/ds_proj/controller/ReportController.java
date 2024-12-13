@@ -24,7 +24,7 @@ public class ReportController {
      */
     @ResponseBody
     @GetMapping("histogram/{first}/{last}")
-    public ResponseEntity<byte[]> getHistogramImage(@PathVariable("first") int first, @PathVariable("last") int last) {
+    public ResponseEntity<byte[]> getHistogram(@PathVariable("first") int first, @PathVariable("last") int last) {
         Object[][] data = dbQueryService.getScenario(first, last);
         return visualService.getHistogramImage(data);
     }
@@ -36,7 +36,7 @@ public class ReportController {
      */
     @ResponseBody
     @GetMapping("histogram/{x}/{first}/{last}")
-    public ResponseEntity<byte[]> getHistogramImageWithX(@PathVariable("x") int x, @PathVariable("first") int first, @PathVariable("last") int last) {
+    public ResponseEntity<byte[]> getHistogramWithX(@PathVariable("x") int x, @PathVariable("first") int first, @PathVariable("last") int last) {
         Integer[] solIdList = dbQueryService.getUsedSolIds(first, last, x);
         Object[][] data = dbQueryService.getScenario(first, last, solIdList);
         return visualService.getHistogramImage(data);
@@ -48,7 +48,7 @@ public class ReportController {
      */
     @ResponseBody
     @GetMapping("histogram/{maxOrMin}/{n}/{first}/{last}")
-    public ResponseEntity<byte[]> testMaxScenario(@PathVariable("maxOrMin") String maxOrMin,@PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
+    public ResponseEntity<byte[]> getMinMaxHistogram(@PathVariable("maxOrMin") String maxOrMin,@PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
         Object[][] data = dbQueryService.getMaxOrMinScenario(first, last, n, maxOrMin.equalsIgnoreCase("max"));
         return visualService.getHistogramImage(data);
     }

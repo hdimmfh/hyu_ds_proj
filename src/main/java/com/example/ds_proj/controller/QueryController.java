@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController("/")
-public class TestController {
+public class QueryController {
     private final DBQueryService dbQueryService;
 
     @Autowired
     @Lazy
-    TestController(DBQueryService dbQueryService) {
+    QueryController(DBQueryService dbQueryService) {
         this.dbQueryService = dbQueryService;
     }
 
@@ -25,31 +25,31 @@ public class TestController {
 
     @ResponseBody
     @GetMapping("sol/{sol_id}")
-    public Object testGetSolutionOdl(@PathVariable("sol_id") int sol_id) {
+    public Object querySolutionOdl(@PathVariable("sol_id") int sol_id) {
         return dbQueryService.getSolutionOdl(sol_id).get("rows")[sol_id % 10];
     }
 
     @ResponseBody
     @GetMapping("var/{sol_id}")
-    public Object[] testGetVarOdl(@PathVariable("sol_id") int sol_id) {
+    public Object[] queryVarOdl(@PathVariable("sol_id") int sol_id) {
         return dbQueryService.getVarOdl(sol_id).get("rows")[sol_id % 10];
     }
 
     @ResponseBody
     @GetMapping("encoded_var/{first}/{last}")
-    public Object[][] testEncodedVar(@PathVariable("first") int first, @PathVariable("last") int last) {
+    public Object[][] queryEncodedVar(@PathVariable("first") int first, @PathVariable("last") int last) {
         return dbQueryService.getEncodedVar(first, last);
     }
 
     @ResponseBody
     @GetMapping("scenario/{first}/{last}")
-    public Object[][] testScenario(@PathVariable("first") int first, @PathVariable("last") int last) {
+    public Object[][] queryScenario(@PathVariable("first") int first, @PathVariable("last") int last) {
         return dbQueryService.getScenario(first, last);
     }
 
     @ResponseBody
     @GetMapping("scenario/{maxOrMin}/{n}/{first}/{last}")
-    public Object[][] testMaxScenario(@PathVariable("maxOrMin") String maxOrMin,@PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
+    public Object[][] queryMinMaxNScenario(@PathVariable("maxOrMin") String maxOrMin,@PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
         return dbQueryService.getMaxOrMinScenario(first, last, n, maxOrMin.equalsIgnoreCase("max"));
     }
 }
