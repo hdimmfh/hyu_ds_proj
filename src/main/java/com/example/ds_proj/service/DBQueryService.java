@@ -68,13 +68,30 @@ public class DBQueryService {
         return result;
     }
 
+    public Object[][] getMaxOrMinScenarioWithX(int first, int last, int n, Integer[] solIdList, boolean isMax) {
+        Object[][] subArray = getScenarioWithX(first, last, solIdList);
+        if (subArray == null) return null;
+        Object[][] result = new Object[n][];
+        PriorityQueue<Object[]> q = new PriorityQueue<>(Comparator.comparingDouble(y
+                -> isMax ? -Double.parseDouble(y[2].toString()) : Double.parseDouble(y[2].toString())));
+        for (Object[] row : subArray) {
+            try {
+                Double.parseDouble(row[2].toString());
+                q.add(row);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        for (int i = 0; i < n; i++) result[i] = q.poll();
+        return result;
+    }
 
-    public Object[][] getScenario(int first, int last, Integer[] lst) {
+
+    public Object[][] getScenarioWithX(int first, int last, Integer[] solIdList) {
         if (first < 0 || 80000 <= last || first > last) return null;
         return Arrays.stream(scenario.get("rows"))
                 .filter(row -> {
                     int rowIndex = Arrays.asList(scenario.get("rows")).indexOf(row);
-                    return rowIndex >= first && rowIndex <= last && contains(lst, rowIndex);
+                    return rowIndex >= first && rowIndex <= last && contains(solIdList, rowIndex);
                 })
                 .toArray(Object[][]::new);
     }

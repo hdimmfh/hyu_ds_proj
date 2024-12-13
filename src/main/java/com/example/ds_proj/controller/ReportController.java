@@ -38,7 +38,7 @@ public class ReportController {
     @GetMapping("histogram/{x}/{first}/{last}")
     public ResponseEntity<byte[]> getHistogramWithX(@PathVariable("x") int x, @PathVariable("first") int first, @PathVariable("last") int last) {
         Integer[] solIdList = dbQueryService.getUsedSolIds(first, last, x);
-        Object[][] data = dbQueryService.getScenario(first, last, solIdList);
+        Object[][] data = dbQueryService.getScenarioWithX(first, last, solIdList);
         return visualService.getHistogramImage(data);
     }
 
