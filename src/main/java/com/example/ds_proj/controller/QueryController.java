@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/")
+@RestController("/query")
 public class QueryController {
     private final DBQueryService dbQueryService;
 
@@ -49,7 +49,14 @@ public class QueryController {
 
     @ResponseBody
     @GetMapping("scenario/{maxOrMin}/{n}/{first}/{last}")
-    public Object[][] queryMinMaxNScenario(@PathVariable("maxOrMin") String maxOrMin,@PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
+    public Object[][] queryMinMaxNScenario(@PathVariable("maxOrMin") String maxOrMin, @PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
         return dbQueryService.getMaxOrMinScenario(first, last, n, maxOrMin.equalsIgnoreCase("max"));
+    }
+
+    @ResponseBody
+    @GetMapping("scenario/{x}/{maxOrMin}/{n}/{first}/{last}")
+    public Object[][] queryMinMaxNScenarioWithX(@PathVariable("x") int x, @PathVariable("maxOrMin") String maxOrMin, @PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
+        Integer[] solIdList = dbQueryService.getUsedSolIds(first, last, x);
+        return dbQueryService.getMaxOrMinScenarioWithX(first, last, n, solIdList, maxOrMin.equalsIgnoreCase("max"));
     }
 }
