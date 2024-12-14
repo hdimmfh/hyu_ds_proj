@@ -1,20 +1,18 @@
 package com.example.ds_proj.controller;
 
-import com.example.ds_proj.service.DBQueryService;
+import com.example.ds_proj.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController("/query")
+@RestController
+@RequestMapping("/query")
 public class QueryController {
-    private final DBQueryService dbQueryService;
+    private final QueryService dbQueryService;
 
     @Autowired
     @Lazy
-    QueryController(DBQueryService dbQueryService) {
+    QueryController(QueryService dbQueryService) {
         this.dbQueryService = dbQueryService;
     }
 

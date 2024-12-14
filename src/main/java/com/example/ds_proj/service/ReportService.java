@@ -16,7 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
 @Service
-public class VisualService {
+public class ReportService {
 
     public ResponseEntity<byte[]> getHistogramImage(Object[][] data) {
         try {
@@ -27,11 +27,11 @@ public class VisualService {
 
 
             HistogramDataset dataset = new HistogramDataset();
-            dataset.addSeries("Y Values", yValues, 50);
+            dataset.addSeries("Primal Objective", yValues, 50);
 
             JFreeChart histogram = ChartFactory.createHistogram(
-                    "Y Values Histogram",  // 제목
-                    "Y Value",             // X축 레이블
+                    "Primal Objective Histogram",  // 제목
+                    "Primal Objective",             // X축 레이블
                     "Frequency",           // Y축 레이블
                     dataset,
                     PlotOrientation.VERTICAL,
@@ -62,18 +62,19 @@ public class VisualService {
      */
     private double[] extractColumnAsDouble(Object[][] data, int columnIndex) {
         return Arrays.stream(data)
-                .map(row -> row[columnIndex])      // 해당 열 값 추출
-                .filter(value -> value != null)    // null 값 제외
+                .filter(row -> row != null && row.length > columnIndex)  // Ensure row is not null and columnIndex exists
+                .map(row -> row[columnIndex])                             // Extract the column value
+                .filter(value -> value != null)                           // Ensure the column value is not null
                 .filter(value -> {
                     try {
-                        Double.parseDouble(value.toString().trim());
-                        return true;              // 변환 가능하면 유지
+                        Double.parseDouble(value.toString().trim());  // Attempt to parse the value as double
+                        return true;                                  // Keep if it's a valid double
                     } catch (NumberFormatException e) {
-                        return false;             // 변환 불가능하면 제외
+                        return false;                                 // Discard if it's not a valid double
                     }
                 })
-                .mapToDouble(value -> Double.parseDouble(value.toString().trim())) // double 변환
-                .toArray();
+                .mapToDouble(value -> Double.parseDouble(value.toString().trim()))  // Convert to double
+                .toArray();  // Return the double array
     }
 
 }

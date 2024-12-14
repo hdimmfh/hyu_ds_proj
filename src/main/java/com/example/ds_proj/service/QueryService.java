@@ -1,17 +1,13 @@
 package com.example.ds_proj.service;
 
 import com.example.ds_proj.repository.DBRepository;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
-@Getter
-@Setter
-public class DBQueryService {
+public class QueryService {
     @Autowired
     Map<String, Object[][]> scenario;
     @Autowired
@@ -100,5 +96,6 @@ public class DBQueryService {
         for (Integer item : lst) if (item == index) return true;
         return false;
     }
+
 
 }

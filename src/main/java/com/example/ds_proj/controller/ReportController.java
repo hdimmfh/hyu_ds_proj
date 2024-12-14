@@ -1,21 +1,22 @@
+
 package com.example.ds_proj.controller;
 
-import com.example.ds_proj.service.DBQueryService;
-import com.example.ds_proj.service.VisualService;
+import com.example.ds_proj.service.QueryService;
+import com.example.ds_proj.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/visual")
+@RequestMapping("/report")
 public class ReportController {
-    private final DBQueryService dbQueryService;
-    private final VisualService visualService;
+    private final QueryService dbQueryService;
+    private final ReportService reportService;
 
     @Autowired
-    public ReportController(DBQueryService dbQueryService, VisualService visualService) {
+    public ReportController(QueryService dbQueryService, ReportService reportService) {
         this.dbQueryService = dbQueryService;
-        this.visualService = visualService;
+        this.reportService = reportService;
     }
 
     /**
@@ -26,7 +27,7 @@ public class ReportController {
     @GetMapping("histogram/{first}/{last}")
     public ResponseEntity<byte[]> getHistogram(@PathVariable("first") int first, @PathVariable("last") int last) {
         Object[][] data = dbQueryService.getScenario(first, last);
-        return visualService.getHistogramImage(data);
+        return reportService.getHistogramImage(data);
     }
 
 
@@ -39,7 +40,7 @@ public class ReportController {
     public ResponseEntity<byte[]> getHistogramWithX(@PathVariable("x") int x, @PathVariable("first") int first, @PathVariable("last") int last) {
         Integer[] solIdList = dbQueryService.getUsedSolIds(first, last, x);
         Object[][] data = dbQueryService.getScenarioWithX(first, last, solIdList);
-        return visualService.getHistogramImage(data);
+        return reportService.getHistogramImage(data);
     }
 
     /**
@@ -48,8 +49,11 @@ public class ReportController {
      */
     @ResponseBody
     @GetMapping("histogram/{maxOrMin}/{n}/{first}/{last}")
-    public ResponseEntity<byte[]> getMinMaxHistogram(@PathVariable("maxOrMin") String maxOrMin,@PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
+    public ResponseEntity<byte[]> getMinMaxHistogram(@PathVariable("maxOrMin") String maxOrMin, @PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
         Object[][] data = dbQueryService.getMaxOrMinScenario(first, last, n, maxOrMin.equalsIgnoreCase("max"));
-        return visualService.getHistogramImage(data);
+        return reportService.getHistogramImage(data);
     }
+
+
+
 }
