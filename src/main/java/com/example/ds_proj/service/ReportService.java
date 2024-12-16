@@ -21,23 +21,15 @@ public class ReportService {
     public ResponseEntity<byte[]> getHistogramImage(Object[][] data) {
         try {
             double[] yValues = extractColumnAsDouble(data, 2);
-
             if (yValues.length == 0) return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Error: No valid data points for histogram.".getBytes());
-
 
             HistogramDataset dataset = new HistogramDataset();
             dataset.addSeries("Primal Objective", yValues, 50);
 
             JFreeChart histogram = ChartFactory.createHistogram(
-                    "Primal Objective Histogram",  // 제목
-                    "Primal Objective",             // X축 레이블
-                    "Frequency",           // Y축 레이블
-                    dataset,
-                    PlotOrientation.VERTICAL,
-                    true,                 // 범례 표시 여부
-                    true,                 // 툴팁 표시 여부
-                    true                  // URL 생성 여부
+                    "Primal Objective Histogram", "Primal Objective", "Frequency",
+                    dataset, PlotOrientation.VERTICAL, true, true, true
             );
 
             BufferedImage chartImage = histogram.createBufferedImage(800, 600);
@@ -48,11 +40,8 @@ public class ReportService {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "image/png");
             return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(("Error generating histogram: " + e.getMessage()).getBytes());
-        }
+        } catch (Exception e) {return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("Error generating histogram: " + e.getMessage()).getBytes());}
     }
 
 

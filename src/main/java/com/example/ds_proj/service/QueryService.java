@@ -16,11 +16,11 @@ public class QueryService {
     DBRepository dbRepository;
 
 
-    public Map<String, Object[][]> getSolutionOdl(int sol_id) {
+    public Map<String, Object[][]> getSolution(int sol_id) {
         return dbRepository.getDataSource("Solution_odl", 10, 14, sol_id);
     }
 
-    public Map<String, Object[][]> getVarOdl(int sol_id) {
+    public Map<String, Object[][]> getVar(int sol_id) {
         return dbRepository.getDataSource("Var_odl", 80000, 2, sol_id);
     }
 
@@ -31,7 +31,7 @@ public class QueryService {
         List<Integer> result = new ArrayList<>();
         int cnt = 0;
         for (Object[] row : subArray) {
-            if ((char) row[x + 1] == '1') result.add(first + cnt);
+            if (row[x + 1].toString().equals("1")) result.add(first + cnt);
             cnt++;
         }
         return result.toArray(new Integer[0]);
@@ -55,10 +55,8 @@ public class QueryService {
                 -> isMax ? -Double.parseDouble(y[2].toString()) : Double.parseDouble(y[2].toString())));
         for (Object[] row : subArray) {
             try {
-                Double.parseDouble(row[2].toString());
-                q.add(row);
-            } catch (NumberFormatException ignored) {
-            }
+                Double.parseDouble(row[2].toString()); q.add(row);
+            } catch (NumberFormatException ignored) {}
         }
         for (int i = 0; i < n; i++) result[i] = q.poll();
         return result;
@@ -84,12 +82,10 @@ public class QueryService {
 
     public Object[][] getScenarioWithX(int first, int last, Integer[] solIdList) {
         if (first < 0 || 80000 <= last || first > last) return null;
-        return Arrays.stream(scenario.get("rows"))
-                .filter(row -> {
-                    int rowIndex = Arrays.asList(scenario.get("rows")).indexOf(row);
-                    return rowIndex >= first && rowIndex <= last && contains(solIdList, rowIndex);
-                })
-                .toArray(Object[][]::new);
+        return Arrays.stream(scenario.get("rows")).filter(row -> {
+            int rowIndex = Arrays.asList(scenario.get("rows")).indexOf(row);
+            return rowIndex >= first && rowIndex <= last && contains(solIdList, rowIndex);
+        }).toArray(Object[][]::new);
     }
 
     private boolean contains(Integer[] lst, int index) {

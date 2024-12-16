@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -17,34 +18,23 @@ public class ExcelService {
     @Autowired
     QueryService dbQueryService;
 
+    @Autowired
+    Map<String, Object[][]> scenario;
 
-    public ResponseEntity<byte[]>  clusterSolutionExcel(int sol_id) {
+    public ResponseEntity<byte[]> getExcel(String table, int id) {
         try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Solution_Odl");
+            Sheet sheet = workbook.createSheet(table);
             CellStyle style = setWorkBookStyle(workbook);
 
-            Object[] colData = dbQueryService.getSolutionOdl(sol_id).get("cols")[0];
-            Object[][] rowData = dbQueryService.getSolutionOdl(sol_id).get("rows");
-            for (int i = 0; i < rowData.length; i++) {
-                Row columnRow = sheet.createRow(i * 2);
-                Row rowRow = sheet.createRow(i * 2 + 1);
-                for (int j = 0; j < colData.length; j++) {
-                    Cell colCell = columnRow.createCell(j);
-                    setCellColor(style, colCell);
-                    colCell.setCellValue(colData[j].toString());
+            if (table.equals("Solution_Odl")) setSolutionWorkbook(sheet, style, id);
+            else if (table.equals("Scenario_ap_st")) setScenarioWorkbook(sheet, style, id);
+            else throw new RuntimeException("Error occurred (getExcel) :  wrong table name");
 
-                    Cell rowCell = rowRow.createCell(j);
-                    if (rowData[i].length > j && !Objects.equals(rowData[i][j].toString(), ","))
-                        rowCell.setCellValue(rowData[i][j].toString());
-                }
-            }
-
-            // Convert to ByteArray
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=Solution_Odl_sol_id.xlsx");
+            headers.add("Content-Disposition", "attachment; filename=" + table + "_sol_id.xlsx");
             return new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.OK);
         } catch (Exception e) {
             System.err.println(e);
@@ -62,4 +52,51 @@ public class ExcelService {
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return style;
     }
+
+    private void setSolutionWorkbook(Sheet sheet, CellStyle style, int sol_id) {
+        Object[] colData = dbQueryService.getSolution(sol_id).get("cols")[0];
+        Object[][] rowData = dbQueryService.getSolution(sol_id).get("rows");
+
+        // 첫 번째 행: 열 제목 설정
+        Row columnRow = sheet.createRow(0);
+        for (int i = 0; i < colData.length; i++) {
+            Cell colCell = columnRow.createCell(i);
+            setCellColor(style, colCell);
+            colCell.setCellValue(colData[i] != null ? colData[i].toString() : "");
+        }
+
+        for (int i = 0; i < rowData.length; i++) {
+            Row rowRow = sheet.createRow(i + 1);
+            for (int j = 0; j < rowData[i].length; j++) {
+                Cell rowCell = rowRow.createCell(j);
+                rowCell.setCellValue(rowData[i][j].toString());
+            }
+        }
+    }
+
+
+    private void setScenarioWorkbook(Sheet sheet, CellStyle style, int x) {
+        Object[] colData = scenario.get("cols")[0];
+
+        Integer[] solIdList = dbQueryService.getUsedSolIds(0, 79999, x);
+        Object[][] rowData = dbQueryService.getScenarioWithX(0, 79999, solIdList);
+
+        // 첫 번째 행: 열 제목 설정
+        Row columnRow = sheet.createRow(0);
+        for (int i = 0; i < colData.length; i++) {
+            Cell colCell = columnRow.createCell(i);
+            setCellColor(style, colCell);
+            colCell.setCellValue(colData[i] != null ? colData[i].toString() : "");
+        }
+
+        // 나머지 행: 데이터 채우기
+        for (int i = 0; i < rowData.length; i++) {
+            Row rowRow = sheet.createRow(i + 1); // 1번 행부터 시작
+            for (int j = 0; j < rowData[i].length; j++) {
+                Cell rowCell = rowRow.createCell(j);
+                rowCell.setCellValue(rowData[i][j] != null ? rowData[i][j].toString() : "");
+            }
+        }
+    }
+
 }

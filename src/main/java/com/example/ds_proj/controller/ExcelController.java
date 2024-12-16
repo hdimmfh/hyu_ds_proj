@@ -15,14 +15,16 @@ public class ExcelController {
         this.excelService = excelService;
     }
 
-    /**
-     *
-     */
     @ResponseBody
     @GetMapping("sol/{sol_id}")
-    public ResponseEntity<byte[]> getClusterSolutionExcel(@PathVariable("sol_id") int sol_id) {
-        return excelService.clusterSolutionExcel(sol_id);
+    public ResponseEntity<byte[]> getSolutionExcel(@PathVariable("sol_id") int sol_id) {
+        return excelService.getExcel("Solution_Odl", sol_id);
     }
 
+    @ResponseBody
+    @GetMapping("scenario/{x}")
+    public ResponseEntity<byte[]> getScenarioExcelWithX(@PathVariable("x") int x) {
+        return excelService.getExcel("Scenario_ap_st", x);
+    }
 
 }

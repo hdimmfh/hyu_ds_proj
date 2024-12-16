@@ -23,14 +23,14 @@ public class QueryController {
 
     @ResponseBody
     @GetMapping("sol/{sol_id}")
-    public Object querySolutionOdl(@PathVariable("sol_id") int sol_id) {
-        return dbQueryService.getSolutionOdl(sol_id).get("rows")[sol_id % 10];
+    public Object querySolution(@PathVariable("sol_id") int sol_id) {
+        return dbQueryService.getSolution(sol_id).get("rows")[sol_id % 10];
     }
 
     @ResponseBody
     @GetMapping("var/{sol_id}")
-    public Object[] queryVarOdl(@PathVariable("sol_id") int sol_id) {
-        return dbQueryService.getVarOdl(sol_id).get("rows")[sol_id % 10];
+    public Object[] queryVar(@PathVariable("sol_id") int sol_id) {
+        return dbQueryService.getVar(sol_id).get("rows")[sol_id % 10];
     }
 
     @ResponseBody
@@ -47,13 +47,15 @@ public class QueryController {
 
     @ResponseBody
     @GetMapping("scenario/{maxOrMin}/{n}/{first}/{last}")
-    public Object[][] queryMinMaxNScenario(@PathVariable("maxOrMin") String maxOrMin, @PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
+    public Object[][] queryMinMaxNScenario(@PathVariable("maxOrMin") String maxOrMin, @PathVariable("n") int n,
+                       @PathVariable("first") int first, @PathVariable("last") int last) {
         return dbQueryService.getMaxOrMinScenario(first, last, n, maxOrMin.equalsIgnoreCase("max"));
     }
 
     @ResponseBody
     @GetMapping("scenario/{x}/{maxOrMin}/{n}/{first}/{last}")
-    public Object[][] queryMinMaxNScenarioWithX(@PathVariable("x") int x, @PathVariable("maxOrMin") String maxOrMin, @PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
+    public Object[][] queryMinMaxNScenarioWithX(@PathVariable("x") int x, @PathVariable("maxOrMin") String maxOrMin,
+                        @PathVariable("n") int n, @PathVariable("first") int first, @PathVariable("last") int last) {
         Integer[] solIdList = dbQueryService.getUsedSolIds(first, last, x);
         return dbQueryService.getMaxOrMinScenarioWithX(first, last, n, solIdList, maxOrMin.equalsIgnoreCase("max"));
     }

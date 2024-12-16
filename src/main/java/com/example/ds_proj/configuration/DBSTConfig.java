@@ -22,8 +22,7 @@ public class DBSTConfig {
     public Map<String, Object[][]> encodedVar(Properties dbProperty) {
         DBRepository dbRepository = new DBRepository();
         dbRepository.dbProperties = dbProperty;
-        Map<String, Object[][]> data = dbRepository.getDataSource("Scenario_ap_st", 80000, 4, 0);
-//        Map<String, Object[][]> data = dbRepository.getDataSource("EncodedVar_st", 80000, 3000, 0);
+        Map<String, Object[][]> data = dbRepository.getDataSource("EncodedVar_st", 80000, 3000, 0);
         return data;
     }
 
